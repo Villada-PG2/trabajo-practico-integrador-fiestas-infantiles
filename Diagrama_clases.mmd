@@ -1,3 +1,25 @@
 classDiagram
 
-class Fiestas Infantiles
+    Reserva <-- Cliente
+    SistemaAdministracion -->"0..*" Reserva
+    Administrador -->"1" SistemaAdministracion
+    Cliente --|> Persona
+    Cliente -->"1..*" Chico
+    Reserva -->"0..1"FiestaInfantil
+    Reserva -->"1" EstadoPago
+    FiestaInfantil -->"1..*" Chico
+    FiestaInfantil -->"1" Carpa
+    Persona --> TipoDocumento
+    Chico --|> Persona
+    Reserva -->"1" PaqueteReserva
+    class Reserva
+    class Cliente
+    class Persona
+    class Carpa
+    class Administrador
+    class EstadoPago
+    class PaqueteReserva
+    class TipoDocumento
+    class FiestaInfantil
+    class Chico
+    class SistemaAdministracion
