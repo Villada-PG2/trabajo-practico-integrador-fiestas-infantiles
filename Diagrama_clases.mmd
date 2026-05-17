@@ -25,7 +25,7 @@ classDiagram
         -Str edadCumpleañero
         -Int DocumentoCumpleañero
         -TipoDocumento tipoDocumentoCumpleañero
-        -Int cantidadInvitadosEstimada
+        -Int cantidadInvitados
         -Time HoraCumpleaños
         -PaqueteReserva paqueteReserva
         -Carpa CarpaSeleccionada
@@ -34,8 +34,10 @@ classDiagram
         -EstadoPago estadoPagoReserva
         -getDocumentoCliente()
         -getDocumentoCumpleañero()
+        -CalcularTotal()
     }
     class Cliente {
+        -Str numeroTelefono
         +getDocumentoCliente()
         +getDocumentoCumpleañero()
     }
@@ -45,18 +47,33 @@ classDiagram
         -Str docmuneto
         -TipoDocumento tipoDocumento
     }
-    class Carpa
+    class Carpa{
+        -Int numero
+    }
     class Administrador
-    class EstadoPago
-    class PaqueteReserva
+    class EstadoPago {
+        -Str nombre
+        -Str descripcion
+    }
+    class PaqueteReserva {
+        -Str nombre
+        -Str descripcion
+        -Float precioPaquete
+    }
     class TipoDocumento {
         -Str nombre
         -Str descripcion
     }
-    class FiestaInfantil
+    class FiestaInfantil {
+        -Chico[list] listaChicosDeFiesta
+    }
     class Chico {
+        -Int edad
         +esCumpleañero()
         +getDocumentoCumpleañero()
     }
-    class SistemaAdministracion
-    class FormaPago
+    class SistemaAdministracion 
+    class FormaPago {
+        -Str nombre
+        -Str descripcion
+    }
