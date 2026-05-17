@@ -25,14 +25,78 @@ Para las distintas tareas que realiza cuenta con una PC HP ALL IN ONE 18-1209LA 
 Por otro lado se estableció la necesidad de la realización de copias de restauración periódicas de la base de datos para lograr la recuperación ante fallas.
 En relación a aspectos de seguridad, se deberá manejar cuentas de usuarios con permisos para accesos al sistema, y además se limitará el número de intentos de conexión no exitosos a tres, momento a partir del cual se inhabilita el usuario y se rechazan otros intentos hasta la correspondiente autorización del usuario supervisor.
 
-___
+__________________________________________________________________
 
 ## Reglas de negocio:
+* __Edad permitida:__ Los cumpleaños son para niños de 1 a 12 años
+*__ Capacidad y uso: __Máximo 3 servicios por día por cada una de las 10 carpas
+* __Duración:__ Cada servicio dura exactamente 2 horas y 45 minutos
+* __Base de facturación:__ El costo inicial cubre hasta 20 niños; se cobra un adicional por cada niño extra
+* __Forma de pago:__ Solo se acepta efectivo
+* __Confirmación de reserva:__ Requiere el pago de una seña del 30% del costo total
+* __Reservas telefónicas:__ Tienen una validez de 5 días hábiles (variable) antes de ser anuladas si no se paga la seña
+* __Cancelaciones:__ La empresa retiene un monto según la antelación de la cancelación
+* __Seguridad del sistema:__ El usuario se inhabilita tras 3 intentos fallidos de conexión
+
 ## Objetivo:
+Gestionar los procesos relacionados con la reserva y la realización del servicio de festejos de cumpleaños en SuperPark
+
 ## Límite:
+* La verificación física de la edad de los niños.
+* La gestión de los juegos del parque fuera del horario del evento.
+* El cumplimiento externo de las leyes de facturación (el sistema solo emite según la norma)
+
 ## Entorno:
+* Clientes (padres, madres o responsables)
+* Niños (homenajeados e invitados)
+* Responsable de Atención al Público (RAP)
+* Responsable de Servicios
+* Coordinadoras
+
 ## Alcance:
-### Requerimientos Funcionales:
+
+__1. Gestión de Clientes y Niños__
+* 1.1 El sistema debe permitir la búsqueda de clientes y niños en la base de datos para verificar si ya existen
+* 1.2 Debe permitir el registro de datos del cliente responsable: apellido, nombre, DNI, domicilio, teléfono, celular y email
+* 1.3 Debe permitir el registro de datos del niño: nombre, apellido, DNI y edad
+* 1.4 El sistema debe facilitar la modificación de datos de clientes o niños ya registrados
+
+__2. Gestión de Reservas y Disponibilidad__
+* 2.1 El sistema debe permitir la consulta de disponibilidad de las 10 carpas en fechas y horarios predeterminados
+* 2.2 Debe permitir el registro de reservas (personales o telefónicas), incluyendo fecha, horario, tipo de servicio y observaciones
+* 2.3 El sistema debe calcular y registrar la fecha de vigencia para las reservas telefónicas (basado en días hábiles configurables)
+* 2.4 Debe permitir la anulación de reservas vencidas para liberar los espacios no confirmados con seña
+* 2.5 El sistema debe gestionar la cancelación de fiestas, calculando el monto de retención según la fecha de cancelación
+
+__3. Gestión de Pagos y Contratos__
+* 3.1 El sistema debe registrar el pago de la seña (30% del costo total) únicamente en efectivo
+* 3.2 Debe generar e imprimir el contrato de cumpleaños con el formato, membrete y márgenes predefinidos por la empresa
+* 3.3 El sistema debe permitir el registro del pago del saldo final y de los cargos por niños extras al concluir el evento
+
+__4. Administración de Servicios y Organización__
+* 4.1 El sistema debe permitir la configuración de los costos de las opciones de servicio (A, B y C) y el precio por niño adicional
+* 4.2 Debe permitir al Responsable de Servicios asignar una coordinadora a cada evento programado
+* 4.3 El sistema debe permitir actualizar el estado del cumpleaños a “organizado” una vez asignados los recursos
+* 4.4 Debe emitir órdenes de trabajo diarias para que cada coordinadora conozca sus recursos y tareas
+
+__5. Control de Ejecución del Evento__
+* 5.1 El sistema debe permitir el registro de asistencia de los niños (nombre y apellido) durante el festejo
+* 5.2 Al finalizar, el sistema debe calcular automáticamente la cantidad de niños extras (aquellos que superen los 20 básicos)
+* 5.3 El sistema debe totalizar el importe extra y sumarlo al saldo pendiente para obtener el monto final a cobrar
+
+__6. Facturación y Reportes__
+* 6.1 El sistema debe generar la factura legal por el total del servicio, cumpliendo con la normativa vigente
+* 6.2 Debe generar informes estadísticos sobre la cantidad de fiestas realizadas y los horarios más solicitados
+* 6.3 El sistema debe emitir reportes de ingresos periódicos para el control administrativo
+
 ## R.N.F.:
+* __Hardware:__ El sistema debe funcionar en una PC HP All-in-One 18-1209LA y usar una impresora HP Pro400
+* __Seguridad:__ Manejo de perfiles de usuario con permisos específicos y bloqueo por intentos fallidos
+* __Respaldo:__ Realización periódica de copias de restauración de la base de datos
+* __Formato:__ Impresión de contratos con márgenes y membrete predefinidos
+
 ## Entradas:
+Entrada: Datos del cliente y del niño, tipo de servicio elegido, fecha y hora, registro de seña, lista de niños asistentes
+
 ## Salidas:
+Salida: Contrato de cumpleaños impreso, órdenes de trabajo para coordinadoras, factura final, reportes de ingresos y estadísticas de uso
