@@ -9,7 +9,7 @@ classDiagram
     Reserva -->"1" EstadoPago
     FiestaInfantil -->"1..*" Chico
     Reserva -->"1" Carpa
-    Reserva -->"1..2" TipoDocumento
+    Persona -->"1" TipoDocumento
     Chico --|> Persona
     Reserva -->"1" PaqueteReserva
     Reserva -->"1" FormaPago
@@ -32,15 +32,31 @@ classDiagram
         -Str datosAdicionales
         -FormaPago formaPagoReserva
         -EstadoPago estadoPagoReserva
+        -getDocumentoCliente()
+        -getDocumentoCumpleañero()
     }
-    class Cliente
-    class Persona
+    class Cliente {
+        +getDocumentoCliente()
+        +getDocumentoCumpleañero()
+    }
+    class Persona {
+        -Str nombre
+        -Str apellido
+        -Str docmuneto
+        -TipoDocumento tipoDocumento
+    }
     class Carpa
     class Administrador
     class EstadoPago
     class PaqueteReserva
-    class TipoDocumento
+    class TipoDocumento {
+        -Str nombre
+        -Str descripcion
+    }
     class FiestaInfantil
-    class Chico
+    class Chico {
+        +esCumpleañero()
+        +getDocumentoCumpleañero()
+    }
     class SistemaAdministracion
     class FormaPago
