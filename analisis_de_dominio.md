@@ -29,7 +29,7 @@ __________________________________________________________________
 
 ## Reglas de negocio:
 * __Edad permitida:__ Los cumpleaños son para niños de 1 a 12 años
-*__ Capacidad y uso: __Máximo 3 servicios por día por cada una de las 10 carpas
+* __Capacidad y uso:__ Máximo 3 servicios por día por cada una de las 10 carpas
 * __Duración:__ Cada servicio dura exactamente 2 horas y 45 minutos
 * __Base de facturación:__ El costo inicial cubre hasta 20 niños; se cobra un adicional por cada niño extra
 * __Forma de pago:__ Solo se acepta efectivo
