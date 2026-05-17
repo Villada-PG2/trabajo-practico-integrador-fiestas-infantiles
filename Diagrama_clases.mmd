@@ -1,18 +1,38 @@
 classDiagram
 
-    Reserva <-- Cliente
+    Reserva -->"1" Cliente
     SistemaAdministracion -->"0..*" Reserva
     Administrador -->"1" SistemaAdministracion
     Cliente --|> Persona
     Cliente -->"1..*" Chico
-    Reserva -->"0..1"FiestaInfantil
+    Reserva "1"<--FiestaInfantil
     Reserva -->"1" EstadoPago
     FiestaInfantil -->"1..*" Chico
-    FiestaInfantil -->"1" Carpa
-    Persona --> TipoDocumento
+    Reserva -->"1" Carpa
+    Reserva -->"1..2" TipoDocumento
     Chico --|> Persona
     Reserva -->"1" PaqueteReserva
-    class Reserva
+    Reserva -->"1" FormaPago
+    class Reserva {
+        -Date diaCumpleaños
+        -Str nombreCliente
+        -Str apellidoCliente
+        -Str numeroTelefonoCliente
+        -Int DocumentoCliente
+        -TipoDocumento tipoDocumentoCliente
+        -Str nombreCumpleañero
+        -Str apellidoCumpleañero
+        -Str edadCumpleañero
+        -Int DocumentoCumpleañero
+        -TipoDocumento tipoDocumentoCumpleañero
+        -Int cantidadInvitadosEstimada
+        -Time HoraCumpleaños
+        -PaqueteReserva paqueteReserva
+        -Carpa CarpaSeleccionada
+        -Str datosAdicionales
+        -FormaPago formaPagoReserva
+        -EstadoPago estadoPagoReserva
+    }
     class Cliente
     class Persona
     class Carpa
@@ -23,3 +43,4 @@ classDiagram
     class FiestaInfantil
     class Chico
     class SistemaAdministracion
+    class FormaPago
