@@ -2,11 +2,11 @@ classDiagram
 
     Reserva -->"1" Cliente
     SistemaAdministracion -->"0..*" Reserva
-    Administrador -->"1" SistemaAdministracion
     Cliente --|> Persona
     Cliente -->"1..*" Chico
     Reserva "1"<--FiestaInfantil
-    Reserva -->"1" EstadoPago
+    Reserva -->"1..*" CambioEstadoReserva
+    CambioEstadoReserva -->"1" EstadoReserva
     FiestaInfantil -->"1..*" Chico
     FiestaInfantil -->"1" Coordinadora
     FiestaInfantil -->"1..*" JuegoParque
@@ -39,10 +39,19 @@ classDiagram
         -Str datosAdicionales
         -FormaPago formaPagoReserva
         -EstadoPago estadoPagoReserva
+        -CambioEstado[list] listaCambiosEstado
+        -Time tiempoValidez
         -getDocumentoCliente()
         -getDocumentoCumpleañero()
         -CalcularTotal()
         -carpaDisonible()
+        +setReservaCreada()
+        +setPendienteConfirmacion()
+        +pasoTiempoValidez()
+        +setAnulada()
+        +setCancelada()
+        -CalcularLapsoHastaReserva()
+        -CalcularTotalARetener()
     }
     class Cliente {
         -Str numeroTelefono
@@ -72,12 +81,27 @@ classDiagram
         -Str descripcion
         +esDisponible()
     }
-    class Administrador {
-        -SistemaAdministracion SistemaDelAdministrador
+
+    class CambioEstadoReserva {
+        -DateTime fechaHoraInicio
+        -DateTime fechaHoraFin
+        -EstadoReserva estado
+        +setCreada()
+        +setPendienteConfirmacion()
+        +pasoTiempoValidez()
+        +setConfirmada()
+        +setAnulada()
+        +setCancelada()
     }
-    class EstadoPago {
+
+    class EstadoReserva {
         -Str nombre
         -Str descripcion
+        +esCreada()
+        +esPendienteConfirmacion()
+        +esConfirmada()
+        +esAnulada()
+        +esCancelada()
     }
     class PaqueteReserva {
         -Str nombre
@@ -99,8 +123,14 @@ classDiagram
         +esCumpleañero()
         +getDocumentoCumpleañero()
     }
-    class SistemaAdministracion {
+    class SistemaAdministracion["SistemaAdministracion / RAP"] {
         -Reserva[list] listaReservas
+        -crearReserva()
+        -setPendienteConfirmacion()
+        -pasoTiempoValidez()
+        -ConfirmarReserva()
+        -AnularReserva()
+        -CancelarReserva()
     }
     class FormaPago {
         -Str nombre
