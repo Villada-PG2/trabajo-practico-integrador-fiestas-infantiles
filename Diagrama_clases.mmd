@@ -8,11 +8,15 @@ classDiagram
     Reserva "1"<--FiestaInfantil
     Reserva -->"1" EstadoPago
     FiestaInfantil -->"1..*" Chico
+    FiestaInfantil -->"1" Coordinadora
+    FiestaInfantil -->"1..*" JuegoParque
+    Coordinadora --|> Persona
     Reserva -->"1" Carpa
     Persona -->"1" TipoDocumento
     Chico --|> Persona
     Reserva -->"1" PaqueteReserva
     Reserva -->"1" FormaPago
+    Administrador
     class Reserva {
         -Date diaCumpleaños
         -Str nombreCliente
@@ -38,6 +42,8 @@ classDiagram
     }
     class Cliente {
         -Str numeroTelefono
+        -Chico[list] hijos
+
         +getDocumentoCliente()
         +getDocumentoCumpleañero()
     }
@@ -50,7 +56,9 @@ classDiagram
     class Carpa{
         -Int numero
     }
-    class Administrador
+    class Administrador {
+        -SistemaAdministracion SistemaDelAdministrador
+    }
     class EstadoPago {
         -Str nombre
         -Str descripcion
@@ -66,14 +74,29 @@ classDiagram
     }
     class FiestaInfantil {
         -Chico[list] listaChicosDeFiesta
+        -Coordinadora coordinadoraAsignada
+        -JuegoParque[list] juegosDisponibles
+        -getJuegosAcordeAEdad()
     }
     class Chico {
         -Int edad
         +esCumpleañero()
         +getDocumentoCumpleañero()
     }
-    class SistemaAdministracion 
+    class SistemaAdministracion {
+        -Reserva[list] listaReservas
+    }
     class FormaPago {
         -Str nombre
         -Str descripcion
+    }
+
+    class Coordinadora
+
+    class JuegoParque {
+        -Str nombre
+        -Str descripcion
+        -Int edadMinima
+        +esAcordeAEdad()
+        +getDatosJuego()
     }
