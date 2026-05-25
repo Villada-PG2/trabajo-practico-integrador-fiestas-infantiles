@@ -37,7 +37,6 @@ classDiagram
         -PaqueteReserva paqueteReserva
         -Carpa CarpaSeleccionada
         -Str datosAdicionales
-        -FormaPago formaPagoReserva
         -EstadoPago estadoPagoReserva
         -CambioEstado[list] listaCambiosEstado
         -Time tiempoValidez
@@ -132,11 +131,7 @@ classDiagram
         -AnularReserva()
         -CancelarReserva()
     }
-    class FormaPago {
-        -Str nombre
-        -Str descripcion
-    }
-
+    
     class Coordinadora
 
     class JuegoParque {
