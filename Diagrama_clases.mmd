@@ -17,7 +17,6 @@ classDiagram
     Persona -->"1" TipoDocumento
     Chico --|> Persona
     Reserva -->"1" PaqueteReserva
-    Reserva -->"1" FormaPago
     Administrador
 
     class Reserva {
@@ -131,7 +130,7 @@ classDiagram
         -AnularReserva()
         -CancelarReserva()
     }
-    
+
     class Coordinadora
 
     class JuegoParque {
