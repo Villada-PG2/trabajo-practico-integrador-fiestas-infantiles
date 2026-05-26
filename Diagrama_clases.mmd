@@ -1,5 +1,5 @@
 classDiagram
-
+ 
     Reserva -->"1" Cliente
     SistemaAdministracion -->"0..*" Reserva
     Cliente --|> Persona
@@ -8,7 +8,7 @@ classDiagram
     Reserva -->"1..*" CambioEstadoReserva
     CambioEstadoReserva -->"1" EstadoReserva
     FiestaInfantil -->"1..*" Chico
-    FiestaInfantil -->"1" Coordinadora
+    FiestaInfantil "0..*"<-- Coordinadora
     FiestaInfantil -->"1..*" JuegoParque
     Coordinadora --|> Persona
     Reserva -->"1" Carpa
