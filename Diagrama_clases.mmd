@@ -12,8 +12,6 @@ classDiagram
     FiestaInfantil -->"1..*" JuegoParque
     Coordinadora --|> Persona
     Reserva -->"1" Carpa
-    Carpa -->"0..*" Horario
-    Horario -->"1" EstadoHorario
     Persona -->"1" TipoDocumento
     Chico --|> Persona
     Reserva -->"1" PaqueteReserva
@@ -45,7 +43,9 @@ classDiagram
         -getDocumentoCumpleañero()
         -CalcularTotal()
         -carpaDisonible()
+        -horarioDisponible()
         +setReservaCreada()
+        -ocuparHorario()
         +setPendienteConfirmacion()
         +pasoTiempoValidez()
         +setAnulada()
@@ -70,16 +70,6 @@ classDiagram
         -Int numero
         -Horario[list] horariosCarpa
         +getHorariosDisponibles()
-    }
-    class Horario {
-        -Date diaDisponible
-        -Time horaDisponibleInicio
-        +getEstado()
-    }
-    class EstadoHorario {
-        -Str nombre
-        -Str descripcion
-        +esDisponible()
     }
 
     class CambioEstadoReserva {
