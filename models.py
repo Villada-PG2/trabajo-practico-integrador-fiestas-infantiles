@@ -21,7 +21,7 @@ class Cliente(BaseModel):
     telefono: str = Field(..., min_length=8, max_length=15)
     celular: str = Field(..., min_length=8, max_length=15)
     email: str = Field(...)
-    hijos: list[Chico] = []
+    hijos: list[Chico] = Field(default_factory=list)
 
 class Coordinadora(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=30)
@@ -38,7 +38,7 @@ class Asistencia(BaseModel):
 class Festejo(BaseModel):
     fechaHoraInicio: datetime = Field(...)
     fechaHoraFin: datetime = Field(...)
-    listaAsistencias: list[Asistencia] = []
+    listaAsistencias: list[Asistencia] = Field(default_factory=list)
     coordinadora: Coordinadora = Field(...)
     estadoFestejo: EstadoFestejo = Field(...)
 
@@ -62,11 +62,11 @@ class Carpa(BaseModel):
 
 class Factura(BaseModel):
     numero: str
-    fechaHoraemision: datetime
+    fechaHoraEmision: datetime
     importeServicio: float
     importeExtras: float
     saldoPendiente: float
-    importeTotal: float
+    importeTotal: float = 0
 
     def calcularImporteTotal(self):
         self.importeTotal = self.importeServicio + self.importeExtras
@@ -107,6 +107,7 @@ class Reserva(BaseModel):
     carpaSeleccionada: Carpa
 
     festejo: Festejo | None = None
+    factura: Factura | None = None
 
     def calcularCostoBase(self):
         return self.paqueteSeleccionado.getCostoPaquete()
@@ -115,11 +116,11 @@ class Reserva(BaseModel):
         return self.calcularCostoBase() * 0.30
 
     def crearReserva(self):
-        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="Creada"))
+        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="Creada"))
         self.listaCambiosEstado.append(cambioEstado)
 
     def setPendienteConfirmacion(self):
-        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="PendienteDeConfirmacion"))
+        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="PendienteDeConfirmacion"))
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
@@ -134,13 +135,13 @@ class Reserva(BaseModel):
             self.setAnulada()
 
     def setAnulada(self):
-        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="Anulada"))
+        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="Anulada"))
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
 
     def setSeniaPagada(self):
-        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="SeniaPagada"))
+        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="SeniaPagada"))
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
@@ -149,8 +150,7 @@ class Reserva(BaseModel):
         pass
 
     def cancelarReserva(self):
-        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="Cancelada"))
-        cambioEstado.setFechaHoraFin()
+        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="Cancelada"))
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
