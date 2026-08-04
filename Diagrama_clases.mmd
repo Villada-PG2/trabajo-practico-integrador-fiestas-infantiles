@@ -1,137 +1,132 @@
 classDiagram
- 
+
     Reserva -->"1" Cliente
-    SistemaAdministracion -->"0..*" Reserva
-    Cliente --|> Persona
+    Reserva -->"1" Chico
+    Cliente -->"1" TipoDocumento
+    Chico -->"1" TipoDocumento
     Cliente -->"1..*" Chico
-    Reserva "1"<--FiestaInfantil
-    Reserva -->"1..*" CambioEstadoReserva
+    Reserva o-- CambioEstadoReserva
     CambioEstadoReserva -->"1" EstadoReserva
-    FiestaInfantil -->"1..*" Chico
-    FiestaInfantil "0..*"<-- Coordinadora
-    FiestaInfantil -->"1..*" JuegoParque
-    Coordinadora --|> Persona
-    Reserva -->"1" Carpa
-    Persona -->"1" TipoDocumento
-    Chico --|> Persona
+    Reserva -->"0..1" Festejo
+    Festejo -->"1" Coordinadora
+    Festejo -->"0..*" Asistencia
+    Festejo -->"1" EstadoFestejo
     Reserva -->"1" PaqueteReserva
+    Reserva -->"1" Carpa
+    Reserva -->"0..1" Factura
+    Asistencia -->"1" Chico
+
+
+    class Festejo {
+        - dateTime fechaHoraInicio
+        - dateTime fechaHoraFin
+        - Asistencia[list] listaAsistencias
+        - Coordinadora coordinadora
+        - EstadoFestejo estadoFestejo
+        - calcularCostoAdicional()
+    }
+
+    class Coordinadora {
+        - str nombre
+        - str apellido
+    }
+
+    class EstadoFestejo {
+        - str nombre
+        - str descripcion
+    }
+
+    class Chico {
+        - str nombre
+        - str apellido
+        - int edad
+        - TipoDocumento tipoDocumento
+        - int numeroDocumento
+    }
 
     class Reserva {
-        -Cliente cliente
-        -Chico cumpleañero
-        -Date diaCumpleaños
-        -Str nombreCliente
-        -Str apellidoCliente
-        -Str numeroTelefonoCliente
-        -Int DocumentoCliente
-        -TipoDocumento tipoDocumentoCliente
-        -Str nombreCumpleañero
-        -Str apellidoCumpleañero
-        -Str edadCumpleañero
-        -Int DocumentoCumpleañero
-        -TipoDocumento tipoDocumentoCumpleañero
-        -Int cantidadInvitados
-        -Time HoraCumpleaños
-        -PaqueteReserva paqueteReserva
-        -Carpa CarpaSeleccionada
-        -Str datosAdicionales
-        -EstadoPago estadoPagoReserva
-        -CambioEstado[list] listaCambiosEstado
-        -Time tiempoValidez
-        -getDocumentoCliente()
-        -getDocumentoCumpleañero()
-        -CalcularTotal()
-        -carpaDisonible()
-        -horarioDisponible()
-        +setReservaCreada()
-        -ocuparHorario()
-        +setPendienteConfirmacion()
-        +pasoTiempoValidez()
-        +setAnulada()
-        +setCancelada()
-        -CalcularLapsoHastaReserva()
-        -CalcularTotalARetener()
-    }
-    class Cliente {
-        -Str numeroTelefono
-        -Chico[list] hijos
+        - dateTime fechaHoraFestejo
+        - str Observacion
+        - float seña
+        - Cliente cliente
+        - Chico cumpleaniero
+        - CambioEstadoReserva[list] listaCambiosEstado
+        - PaqueteReserva paqueteSeleccionado
+        - Carpa carpaSeleccionada
 
-        +getDocumentoCliente()
-        +getDocumentoCumpleañero()
-    }
-    class Persona {
-        -Str nombre
-        -Str apellido
-        -Str docmuneto
-        -TipoDocumento tipoDocumento
-    }
-    class Carpa{
-        -Int numero
-        -Horario[list] horariosCarpa
-        +getHorariosDisponibles()
+        - calcularCostoBase()
+        - calcularSeña()
+        - crearReserva()
+        - setPendienteConfirmacion()
+        - pasaron5Dias()
+        - setAnulada()
+        - setSeñaPagada()
+        - generarContrato()
+        - cancelarReserva()
+        - calcularRetencion()
     }
 
     class CambioEstadoReserva {
-        -DateTime fechaHoraInicio
-        -DateTime fechaHoraFin
-        -EstadoReserva estado
-        +setCreada()
-        +setPendienteConfirmacion()
-        +pasoTiempoValidez()
-        +setConfirmada()
-        +setAnulada()
-        +setCancelada()
+        - dateTime fechaHoraInicio
+        - dateTime fechaHoraFin
+        - EstadoReserva estadoReserva
+        + setCreada()
+        + setPendienteConfirmacion()
+        + pasaron5Dias()
+        + setAnulada()
+        + setSeñaPagada()
+        + setCancelada()
     }
 
     class EstadoReserva {
-        -Str nombre
-        -Str descripcion
-        +esCreada()
-        +esPendienteConfirmacion()
-        +esConfirmada()
-        +esAnulada()
-        +esCancelada()
+        - str nombre
+        - str descripcion
+        + esCreada()
+        + esPendienteConfirmacion()
+        + esAnulada()
+        + esSeñaPagada()
+        + esCancelada()
     }
+    class Carpa {
+        - int numero
+        - str ubicacion
+    }
+
     class PaqueteReserva {
-        -Str nombre
-        -Str descripcion
-        -Float precioPaquete
-    }
-    class TipoDocumento {
-        -Str nombre
-        -Str descripcion
-    }
-    class FiestaInfantil {
-        -Chico[list] listaChicosDeFiesta
-        -Coordinadora coordinadoraAsignada
-        -JuegoParque[list] juegosDisponibles
-        -getJuegosAcordeAEdad()
-    }
-    class Chico {
-        -Int edad
-        +esCumpleañero()
-        +getDocumentoCumpleañero()
-    }
-    class SistemaAdministracion["SistemaAdministracion / RAP"] {
-        -Reserva[list] listaReservas
-        -crearReserva()
-        -setPendienteConfirmacion()
-        -pasoTiempoValidez()
-        -ConfirmarReserva()
-        -AnularReserva()
-        -CancelarReserva()
+        - str nombre
+        - str descripcion
+        - float costoPaquete
     }
 
-    class Coordinadora{
-        -anotarNombreYApellidoDeCadaNiño()
-        -totalizarCantidadDeNiños()
-        -calcularNiñosExtra()
+    class Cliente {
+        - str nombre
+        - str apellido
+        - TipoDocumento tipoDocumento
+        - int numeroDocumento
+        - str domicilio
+        - str telefono
+        - str celular
+        - email email
+        - Chico[list] Hijos
     }
 
-    class JuegoParque {
-        -Str nombre
-        -Str descripcion
-        -Int edadMinima
-        +esAcordeAEdad()
-        +getDatosJuego()
+    class Asistencia {
+        - int numeroAsistencia
+        - Chico chico
+    }
+
+    class TipoDocumento{
+        - str nombre
+        - str descripcion
+    }
+
+    class Factura {
+        -String numero
+        -Date fechaEmision
+        -float importeServicio
+        -float importeExtras
+        -float saldoPendiente
+        -float importeTotal
+        -String tipoComprobante
+        -calcularImporteTotal()
     }
