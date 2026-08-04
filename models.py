@@ -53,6 +53,9 @@ class PaqueteReserva(BaseModel):
     descripcion: str = Field(...)
     costoPaquete: float = Field(gt=0)
 
+    def getCostoPaquete(self):
+        return self.costoPaquete
+
 class Carpa(BaseModel):
     numero: int = Field(..., gt=0)
     ubicacion: str = Field(...,)
@@ -71,7 +74,10 @@ class Factura(BaseModel):
 
 class EstadoReserva(BaseModel):
     nombre: str = Field(...)
-    descripcion: str = Field(...)
+    descripcion: str | None = None
+
+    def getNombre(self):
+        return self.nombre
 
 class CambioEstadoReserva(BaseModel):
     fechaHoraInicio: datetime = Field(default_factory=datetime.now)
@@ -85,5 +91,69 @@ class CambioEstadoReserva(BaseModel):
     def setFechaHoraFin(self):
         self.fechaHoraFin = datetime.now()
 
-    def getEstado(self):
-        return self.estadoReserva
+    def getNombreEstado(self):
+        return self.estadoReserva.getNombre()
+
+class Reserva(BaseModel):
+    fechaHoraInicio: datetime
+    observacion: str
+    senia: float = Field(ge=0)
+
+    cliente: Cliente
+    cumpleaniero: Chico
+
+    listaCambiosEstado: list[CambioEstadoReserva] = Field(default_factory=list)
+    paqueteSeleccionado: PaqueteReserva
+    carpaSeleccionada: Carpa
+
+    festejo: Festejo | None = None
+
+    def calcularCostoBase(self):
+        return self.paqueteSeleccionado.getCostoPaquete()
+
+    def calcularSenia(self):
+        return self.calcularCostoBase() * 0.30
+
+    def crearReserva(self):
+        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="Creada"))
+        self.listaCambiosEstado.append(cambioEstado)
+
+    def setPendienteConfirmacion(self):
+        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="PendienteDeConfirmacion"))
+        if len(self.listaCambiosEstado) > 0: 
+            self.listaCambiosEstado[-1].setFechaHoraFin()
+        self.listaCambiosEstado.append(cambioEstado)
+
+    def pasaron5Dias(self):
+        if not self.listaCambiosEstado:
+            return False
+        
+        estado = self.listaCambiosEstado[-1].getNombreEstado()
+
+        if estado and estado == "PendienteDeConfirmacion" and self.listaCambiosEstado[-1].pasaron5Dias():
+            self.setAnulada()
+
+    def setAnulada(self):
+        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="Anulada"))
+        if len(self.listaCambiosEstado) > 0: 
+            self.listaCambiosEstado[-1].setFechaHoraFin()
+        self.listaCambiosEstado.append(cambioEstado)
+
+    def setSeniaPagada(self):
+        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="SeniaPagada"))
+        if len(self.listaCambiosEstado) > 0: 
+            self.listaCambiosEstado[-1].setFechaHoraFin()
+        self.listaCambiosEstado.append(cambioEstado)
+
+    def generarContrato(self):
+        pass
+
+    def cancelarReserva(self):
+        cambioEstado = CambioEstadoReserva(fechaHoraInicio=datetime.now(),estadoReserva=EstadoReserva(nombre="Cancelada"))
+        cambioEstado.setFechaHoraFin()
+        if len(self.listaCambiosEstado) > 0: 
+            self.listaCambiosEstado[-1].setFechaHoraFin()
+        self.listaCambiosEstado.append(cambioEstado)
+
+    def calcularRetencion(self):
+        pass
