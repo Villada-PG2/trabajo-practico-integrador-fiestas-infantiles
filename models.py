@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class TipoDocumento(BaseModel):
     nombre: str = Field(...)
@@ -42,6 +42,12 @@ class Festejo(BaseModel):
     coordinadora: Coordinadora = Field(...)
     estadoFestejo: EstadoFestejo = Field(...)
 
+    def calcularCostoAdicional(self):
+        if len(self.listaAsistencias) > 20:
+            extras = len(self.listaAsistencias) - 20
+            return extras * 5000
+        return 0
+
 class PaqueteReserva(BaseModel):
     nombre: str = Field(...)
     descripcion: str = Field(...)
@@ -62,3 +68,22 @@ class Factura(BaseModel):
     def calcularImporteTotal(self):
         self.importeTotal = self.importeServicio + self.importeExtras
         return self.importeTotal
+
+class EstadoReserva(BaseModel):
+    nombre: str = Field(...)
+    descripcion: str = Field(...)
+
+class CambioEstadoReserva(BaseModel):
+    fechaHoraInicio: datetime = Field(default_factory=datetime.now)
+    fechaHoraFin: datetime | None = None
+    estadoReserva: EstadoReserva = Field(...)
+
+    def pasaron5Dias(self):
+        tiempo_desde_cambio = datetime.now() - self.fechaHoraInicio
+        return tiempo_desde_cambio >= timedelta(days=5)
+
+    def setFechaHoraFin(self):
+        self.fechaHoraFin = datetime.now()
+
+    def getEstado(self):
+        return self.estadoReserva

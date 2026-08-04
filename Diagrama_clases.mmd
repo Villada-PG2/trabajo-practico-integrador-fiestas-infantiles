@@ -70,22 +70,14 @@ classDiagram
         - dateTime fechaHoraInicio
         - dateTime fechaHoraFin
         - EstadoReserva estadoReserva
-        + setCreada()
-        + setPendienteConfirmacion()
         + pasaron5Dias()
-        + setAnulada()
-        + setSeñaPagada()
-        + setCancelada()
+        - setFechaHoraFin()
+        - getEstado()
     }
 
     class EstadoReserva {
         - str nombre
         - str descripcion
-        + esCreada()
-        + esPendienteConfirmacion()
-        + esAnulada()
-        + esSeñaPagada()
-        + esCancelada()
     }
     class Carpa {
         - int numero
