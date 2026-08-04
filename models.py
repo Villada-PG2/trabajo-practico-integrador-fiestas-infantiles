@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 class TipoDocumento(BaseModel):
     nombre: str = Field(...)
@@ -21,3 +22,22 @@ class Cliente(BaseModel):
     celular: str = Field(..., min_length=8, max_length=15)
     email: str = Field(...)
     hijos: list[Chico] = []
+
+class Coordinadora(BaseModel):
+    nombre: str = Field(..., min_length=3, max_length=30)
+    apellido: str = Field(..., min_length=3, max_length=30)
+
+class EstadoFestejo(BaseModel):
+    nombre: str = Field(...)
+    descripcion: str = Field(...)
+
+class Asistencia(BaseModel):
+    numeroAsistencia: int = Field(gt=0)
+    chico: Chico
+
+class Festejo(BaseModel):
+    fechaHoraInicio: datetime = Field(...)
+    fechaHoraFin: datetime = Field(...)
+    listaAsistencias: list[Asistencia] = []
+    coordinadora: Coordinadora = Field(...)
+    estadoFestejo: EstadoFestejo = Field(...)
