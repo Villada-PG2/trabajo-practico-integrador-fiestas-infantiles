@@ -41,3 +41,24 @@ class Festejo(BaseModel):
     listaAsistencias: list[Asistencia] = []
     coordinadora: Coordinadora = Field(...)
     estadoFestejo: EstadoFestejo = Field(...)
+
+class PaqueteReserva(BaseModel):
+    nombre: str = Field(...)
+    descripcion: str = Field(...)
+    costoPaquete: float = Field(gt=0)
+
+class Carpa(BaseModel):
+    numero: int = Field(..., gt=0)
+    ubicacion: str = Field(...,)
+
+class Factura(BaseModel):
+    numero: str
+    fechaHoraemision: datetime
+    importeServicio: float
+    importeExtras: float
+    saldoPendiente: float
+    importeTotal: float
+
+    def calcularImporteTotal(self):
+        self.importeTotal = self.importeServicio + self.importeExtras
+        return self.importeTotal
