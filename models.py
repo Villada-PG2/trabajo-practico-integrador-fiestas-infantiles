@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator, field_validator
 from datetime import datetime, timedelta
 from typing import Optional
 class TipoDocumento(BaseModel):
@@ -10,13 +10,13 @@ class Chico(BaseModel):
     apellido: str = Field(..., min_length=3, max_length=30, description="Apellido del chico")
     edad: int = Field(..., gt=0, description="Edad del chico")
     tipoDocumento: TipoDocumento = Field(..., description="Tipo de documento")
-    numeroDocumento: int = Field(..., ge=1000000, le=99999999, description="Numero de documento")
+    numeroDocumento: str = Field(..., min_length=7, max_length=8, description="Numero de documento")
 
 class Cliente(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=30, description="Nombre del cliente")
     apellido: str = Field(..., min_length=3, max_length=30, description="Apellido del cliente")
     tipoDocumento: TipoDocumento = Field(..., description="Tipo de documento")
-    numeroDocumento: int = Field(..., ge=1000000, le=99999999, description="Numero de documento")
+    numeroDocumento: str = Field(..., min_length=7, max_length=8, description="Numero de documento")
     domicilio: str = Field(..., description="Domicilio del cliente")
     telefono: str = Field(..., min_length=8, max_length=15, description="Telefono del cliente")
     celular: str = Field(..., min_length=8, max_length=15, description="Celular del cliente")
@@ -42,6 +42,26 @@ class Festejo(BaseModel):
     coordinadora: Coordinadora = Field(..., description="Coordinadora asignada al festejo")
     estadoFestejo: EstadoFestejo = Field(..., description="Estado actual del festejo")
 
+    @field_validator("fechaHoraInicio")
+    @classmethod
+    def validar_fecha_inicio(cls, value):
+        if value <= datetime.now():
+            raise ValueError("El festejo no puede comenzar en el pasado")
+        return value
+    
+    @model_validator(mode="after") 
+    def verificar_fechas(self): 
+        if self.fechaHoraFin <= self.fechaHoraInicio:
+            raise ValueError("La fecha de inicio no puede ser posterior a la fecha de fin")
+        return self
+
+    @model_validator(mode="after")
+    def verificar_duracion(self):
+        duracion = self.fechaHoraFin - self.fechaHoraInicio
+        if duracion != timedelta(hours=2, minutes=45):
+            raise ValueError("El festejo debe tener una duración de 2 horas y 45 minutos")
+        return self
+    
     def calcularCostoAdicional(self):
         if len(self.listaAsistencias) > 20:
             extras = len(self.listaAsistencias) - 20
@@ -49,7 +69,7 @@ class Festejo(BaseModel):
         return 0
 
 class PaqueteReserva(BaseModel):
-    nombre: str = Field(..., description="Nombre del paquete de reserva")
+    nombre: str = Field(..., min_length=3, max_length=50, description="Nombre del paquete de reserva")
     descripcion: Optional[str] = Field(default=None,description="Descripcion del paquete de reserva")
     costoPaquete: float = Field(..., gt=0, description="Costo del paquete")
 
@@ -60,17 +80,16 @@ class Carpa(BaseModel):
     numero: int = Field(..., gt=0, description="Numero de carpa")
     ubicacion: str = Field(..., description="Ubicacion de carpa")
 
+
 class Factura(BaseModel):
     numero: str = Field(..., description="Numero de factura")
     fechaHoraEmision: datetime = Field(..., description=" Fecha y hora de emision de factura")
     importeServicio: float = Field(..., gt=0, description="Importe de servicio")
     importeExtras: float = Field(..., gt=0, description="Importe extras")
     saldoPendiente: float = Field(..., gt=0, description="Saldo pendiente")
-    importeTotal: float = Field(default=0.0, ge=0, description="Importe total")
 
     def calcularImporteTotal(self):
-        self.importeTotal = self.importeServicio + self.importeExtras
-        return self.importeTotal
+        return self.importeServicio + self.importeExtras
 
 class EstadoReserva(BaseModel):
     nombre: str = Field(..., description="Nombre de estado reserva")
@@ -97,7 +116,6 @@ class CambioEstadoReserva(BaseModel):
 class Reserva(BaseModel):
     fechaHoraFestejo: datetime = Field(..., description="Fecha y hora seleccionada para el festejo")
     observacion: Optional[str] = Field(default=None,description="Observacion adicional para el festejo")
-    senia: float = Field(..., ge=0, description="Senia")
 
     cliente: Cliente = Field(..., description="Cliente")
     cumpleaniero: Chico = Field(..., description="Cumplaniero")
@@ -109,6 +127,13 @@ class Reserva(BaseModel):
     festejo: Optional[Festejo] = Field(default=None, description="Festejo asociado a la reserva")
     factura: Optional[Factura] = Field(default=None, description="Factura correspondiente al festejo")
 
+    @field_validator("fechaHoraFestejo")
+    @classmethod
+    def validar_fecha_festejo(cls, value: datetime):
+        if value <= datetime.now():
+            raise ValueError("El Festejo no puede ser asignado para un dia pasado")
+        return value
+    
     def calcularCostoBase(self):
         return self.paqueteSeleccionado.getCostoPaquete()
 
