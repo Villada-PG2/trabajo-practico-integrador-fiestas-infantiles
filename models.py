@@ -1,46 +1,46 @@
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
-
+from typing import Optional
 class TipoDocumento(BaseModel):
-    nombre: str = Field(...)
-    descripcion: str = Field(...)
+    nombre: str = Field(..., min_length=3, max_length=30, description="Nombre de documento")
+    descripcion: Optional[str] = Field(default=None,description="Descripcion del documento")
 
 class Chico(BaseModel):
-    nombre: str = Field(..., min_length=3, max_length=30)
-    apellido: str = Field(..., min_length=3, max_length=30)
-    edad: int = Field(..., gt=0)
-    tipoDocumento: TipoDocumento = Field(...)
-    numeroDocumento: int = Field(..., ge=1000000, le=99999999)
+    nombre: str = Field(..., min_length=3, max_length=30, description="Nombre del chico")
+    apellido: str = Field(..., min_length=3, max_length=30, description="Apellido del chico")
+    edad: int = Field(..., gt=0, description="Edad del chico")
+    tipoDocumento: TipoDocumento = Field(..., description="Tipo de documento")
+    numeroDocumento: int = Field(..., ge=1000000, le=99999999, description="Numero de documento")
 
 class Cliente(BaseModel):
-    nombre: str = Field(..., min_length=3, max_length=30)
-    apellido: str = Field(..., min_length=3, max_length=30)
-    tipoDocumento: TipoDocumento = Field(...)
-    numeroDocumento: int = Field(..., ge=1000000, le=99999999)
-    domicilio: str = Field(...)
-    telefono: str = Field(..., min_length=8, max_length=15)
-    celular: str = Field(..., min_length=8, max_length=15)
-    email: str = Field(...)
-    hijos: list[Chico] = Field(default_factory=list)
+    nombre: str = Field(..., min_length=3, max_length=30, description="Nombre del cliente")
+    apellido: str = Field(..., min_length=3, max_length=30, description="Apellido del cliente")
+    tipoDocumento: TipoDocumento = Field(..., description="Tipo de documento")
+    numeroDocumento: int = Field(..., ge=1000000, le=99999999, description="Numero de documento")
+    domicilio: str = Field(..., description="Domicilio del cliente")
+    telefono: str = Field(..., min_length=8, max_length=15, description="Telefono del cliente")
+    celular: str = Field(..., min_length=8, max_length=15, description="Celular del cliente")
+    email: str = Field(..., description="Email del cliente")
+    hijos: list[Chico] = Field(default_factory=list, description="Hijos del cliente")
 
 class Coordinadora(BaseModel):
-    nombre: str = Field(..., min_length=3, max_length=30)
-    apellido: str = Field(..., min_length=3, max_length=30)
+    nombre: str = Field(..., min_length=3, max_length=30, description="Nombre de coordinadora")
+    apellido: str = Field(..., min_length=3, max_length=30, description="Apellido de coordinadora")
 
 class EstadoFestejo(BaseModel):
-    nombre: str = Field(...)
-    descripcion: str = Field(...)
+    nombre: str = Field(..., description="Nombre del estado de festejo")
+    descripcion: Optional[str] = Field(default=None,description="Descripcion del estado del festejo")
 
 class Asistencia(BaseModel):
-    numeroAsistencia: int = Field(gt=0)
-    chico: Chico
+    numeroAsistencia: int = Field(..., gt=0, description="Numero de asistencia")
+    chico: Chico = Field(..., description="Chico de la asistencia")
 
 class Festejo(BaseModel):
-    fechaHoraInicio: datetime = Field(...)
-    fechaHoraFin: datetime = Field(...)
-    listaAsistencias: list[Asistencia] = Field(default_factory=list)
-    coordinadora: Coordinadora = Field(...)
-    estadoFestejo: EstadoFestejo = Field(...)
+    fechaHoraInicio: datetime = Field(..., description="Fecha y hora de inicio del festejo")
+    fechaHoraFin: datetime = Field(..., description="Fecha y hora de fin del festejo")
+    listaAsistencias: list[Asistencia] = Field(default_factory=list, description="Lista de asistencias")
+    coordinadora: Coordinadora = Field(..., description="Coordinadora asignada al festejo")
+    estadoFestejo: EstadoFestejo = Field(..., description="Estado actual del festejo")
 
     def calcularCostoAdicional(self):
         if len(self.listaAsistencias) > 20:
@@ -49,40 +49,40 @@ class Festejo(BaseModel):
         return 0
 
 class PaqueteReserva(BaseModel):
-    nombre: str = Field(...)
-    descripcion: str = Field(...)
-    costoPaquete: float = Field(gt=0)
+    nombre: str = Field(..., description="Nombre del paquete de reserva")
+    descripcion: Optional[str] = Field(default=None,description="Descripcion del paquete de reserva")
+    costoPaquete: float = Field(..., gt=0, description="Costo del paquete")
 
     def getCostoPaquete(self):
         return self.costoPaquete
 
 class Carpa(BaseModel):
-    numero: int = Field(..., gt=0)
-    ubicacion: str = Field(...,)
+    numero: int = Field(..., gt=0, description="Numero de carpa")
+    ubicacion: str = Field(..., description="Ubicacion de carpa")
 
 class Factura(BaseModel):
-    numero: str
-    fechaHoraEmision: datetime
-    importeServicio: float
-    importeExtras: float
-    saldoPendiente: float
-    importeTotal: float = 0
+    numero: str = Field(..., description="Numero de factura")
+    fechaHoraEmision: datetime = Field(..., description=" Fecha y hora de emision de factura")
+    importeServicio: float = Field(..., gt=0, description="Importe de servicio")
+    importeExtras: float = Field(..., gt=0, description="Importe extras")
+    saldoPendiente: float = Field(..., gt=0, description="Saldo pendiente")
+    importeTotal: float = Field(default=0.0, ge=0, description="Importe total")
 
     def calcularImporteTotal(self):
         self.importeTotal = self.importeServicio + self.importeExtras
         return self.importeTotal
 
 class EstadoReserva(BaseModel):
-    nombre: str = Field(...)
-    descripcion: str | None = None
+    nombre: str = Field(..., description="Nombre de estado reserva")
+    descripcion: Optional[str] = Field(default=None,description="Descripcion del estado de reserva")
 
     def getNombre(self):
         return self.nombre
 
 class CambioEstadoReserva(BaseModel):
-    fechaHoraInicio: datetime = Field(default_factory=datetime.now)
-    fechaHoraFin: datetime | None = None
-    estadoReserva: EstadoReserva = Field(...)
+    fechaHoraInicio: datetime = Field(default_factory=datetime.now, description="Fecha y hora de inicio del cambio de estado")
+    fechaHoraFin: Optional[datetime] = Field(default=None, description="Fecha y hora de fin del cambio de estado")
+    estadoReserva: EstadoReserva = Field(..., description="Estado asociadoa al cambio de estado reserva")
 
     def pasaron5Dias(self):
         tiempo_desde_cambio = datetime.now() - self.fechaHoraInicio
@@ -95,19 +95,19 @@ class CambioEstadoReserva(BaseModel):
         return self.estadoReserva.getNombre()
 
 class Reserva(BaseModel):
-    fechaHoraInicio: datetime
-    observacion: str
-    senia: float = Field(ge=0)
+    fechaHoraFestejo: datetime = Field(..., description="Fecha y hora seleccionada para el festejo")
+    observacion: Optional[str] = Field(default=None,description="Observacion adicional para el festejo")
+    senia: float = Field(..., ge=0, description="Senia")
 
-    cliente: Cliente
-    cumpleaniero: Chico
+    cliente: Cliente = Field(..., description="Cliente")
+    cumpleaniero: Chico = Field(..., description="Cumplaniero")
 
-    listaCambiosEstado: list[CambioEstadoReserva] = Field(default_factory=list)
-    paqueteSeleccionado: PaqueteReserva
-    carpaSeleccionada: Carpa
+    listaCambiosEstado: list[CambioEstadoReserva] = Field(default_factory=list, description="Lista de cambios estado de la reserva")
+    paqueteSeleccionado: PaqueteReserva = Field(..., description="Paquete seleccionado para el festejo")
+    carpaSeleccionada: Carpa = Field(..., description="Carpa seleccionada para el festejo")
 
-    festejo: Festejo | None = None
-    factura: Factura | None = None
+    festejo: Optional[Festejo] = Field(default=None, description="Festejo asociado a la reserva")
+    factura: Optional[Factura] = Field(default=None, description="Factura correspondiente al festejo")
 
     def calcularCostoBase(self):
         return self.paqueteSeleccionado.getCostoPaquete()
