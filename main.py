@@ -1,257 +1,135 @@
 from datetime import datetime, timedelta
-from os import name
 
 from models import (
+    ESTADOS_RESERVA,
+    ESTADOS_FESTEJO,
     TipoDocumento,
     Chico,
     Cliente,
-    Coordinadora,
+    EstadoReserva,
     EstadoFestejo,
-    Asistencia,
+    Coordinadora,
     Festejo,
+    Factura,
     PaqueteReserva,
     Carpa,
-    Factura,
-    EstadoReserva,
-    CambioEstadoReserva,
     Reserva
 )
 
 
-def main():
-
-    # =========================
-    # TIPO DE DOCUMENTO
-    # =========================
-
-    tipo_documento = TipoDocumento(
-        nombre="DNI",
-        descripcion="Documento Nacional de Identidad"
-    )
-
-
-    # =========================
-    # CHICO
-    # =========================
-
-    cumpleaniero = Chico(
-        nombre="Juan",
-        apellido="Perez",
-        edad=10,
-        tipoDocumento=tipo_documento,
-        numeroDocumento=45678912
-    )
-
-
-    invitado = Chico(
-        nombre="Pedro",
-        apellido="Gomez",
-        edad=11,
-        tipoDocumento=tipo_documento,
-        numeroDocumento=40123456
-    )
-
-
-    # =========================
-    # CLIENTE
-    # =========================
-
-    cliente = Cliente(
-        nombre="Carlos",
-        apellido="Perez",
-        tipoDocumento=tipo_documento,
-        numeroDocumento=30123456,
-        domicilio="Av. Siempre Viva 123",
-        telefono="3511234567",
-        celular="3517654321",
-        email="carlos@gmail.com",
-        hijos=[cumpleaniero]
-    )
-
-
-    # =========================
-    # COORDINADORA
-    # =========================
-
-    coordinadora = Coordinadora(
-        nombre="Maria",
-        apellido="Gonzalez"
-    )
-
-
-    # =========================
-    # ESTADO DEL FESTEJO
-    # =========================
-
-    estado_festejo = EstadoFestejo(
-        nombre="Confirmado",
-        descripcion="Festejo confirmado"
-    )
-
-
-    # =========================
-    # ASISTENCIAS
-    # =========================
-
-    asistencia1 = Asistencia(
-        numeroAsistencia=1,
-        chico=cumpleaniero
-    )
-
-    asistencia2 = Asistencia(
-        numeroAsistencia=2,
-        chico=invitado
-    )
-
-
-    # =========================
-    # FESTEJO
-    # =========================
-
-    festejo = Festejo(
-        fechaHoraInicio=datetime(2026, 8, 20, 15, 0),
-        fechaHoraFin=datetime(2026, 8, 20, 18, 0),
-        listaAsistencias=[asistencia1, asistencia2],
-        coordinadora=coordinadora,
-        estadoFestejo=estado_festejo
-    )
-
-
-    # =========================
-    # PAQUETE
-    # =========================
-
-    paquete = PaqueteReserva(
-        nombre="Paquete A",
-        descripcion="Festejo basico",
-        costoPaquete=50000
-    )
-
-
-    # =========================
-    # CARPA
-    # =========================
-
-    carpa = Carpa(
-        numero=1,
-        ubicacion="Sector Norte"
-    )
-
-
-    # =========================
-    # RESERVA
-    # =========================
-
-    reserva = Reserva(
-        fechaHoraInicio=datetime(2026, 8, 20, 15, 0),
-        observacion="Cumpleaños de Juan",
-        senia=15000,
-        cliente=cliente,
-        cumpleaniero=cumpleaniero,
-        paqueteSeleccionado=paquete,
-        carpaSeleccionada=carpa,
-        festejo=festejo
-    )
-
-
-    # =========================
-    # PRUEBAS
-    # =========================
-
-    print("===== DATOS DE LA RESERVA =====")
-
-    print("Cliente:", reserva.cliente.nombre, reserva.cliente.apellido)
-    print("Cumpleañero:", reserva.cumpleaniero.nombre)
-    print("Paquete:", reserva.paqueteSeleccionado.nombre)
-    print("Carpa:", reserva.carpaSeleccionada.numero)
-
-
-    # Costo base
-
-    print("\n===== COSTOS =====")
-
-    print("Costo del paquete:",
-          reserva.calcularCostoBase())
-
-    print("Seña correspondiente:",
-          reserva.calcularSenia())
-
-
-    # Crear reserva
-
-    print("\n===== ESTADOS =====")
-
-    reserva.crearReserva()
-
-    print(
-        "Estado actual:",
-        reserva.listaCambiosEstado[-1].getNombreEstado()
-    )
-
-
-    # Pasar a pendiente de confirmación
-
-    reserva.setPendienteConfirmacion()
-
-    print(
-        "Estado actual:",
-        reserva.listaCambiosEstado[-1].getNombreEstado()
-    )
-
-
-    # Pagar seña
-
-    reserva.setSeniaPagada()
-
-    print(
-        "Estado actual:",
-        reserva.listaCambiosEstado[-1].getNombreEstado()
-    )
-
-
-    # Cancelar reserva
-
-    reserva.cancelarReserva()
-
-    print(
-        "Estado actual:",
-        reserva.listaCambiosEstado[-1].getNombreEstado()
-    )
-
-
-    # =========================
-    # COSTO ADICIONAL
-    # =========================
-
-    print("\n===== COSTO ADICIONAL =====")
-
-    print(
-        "Costo adicional del festejo:",
-        festejo.calcularCostoAdicional()
-    )
-
-
-    # =========================
-    # FACTURA
-    # =========================
-
-    factura = Factura(
-        numero="F001",
-        fechaHoraEmision=datetime.now(),
-        importeServicio=reserva.calcularCostoBase(),
-        importeExtras=festejo.calcularCostoAdicional(),
-        saldoPendiente=0
-    )
-
-    factura.calcularImporteTotal()
-
-    print("\n===== FACTURA =====")
-
-    print("Número:", factura.numero)
-    print("Importe servicio:", factura.importeServicio)
-    print("Importe extras:", factura.importeExtras)
-    print("Importe total:", factura.importeTotal)
-
-
-if name == "__main__":
-    main()
+ESTADOS_RESERVA.extend([
+    EstadoReserva(nombre="Creada", descripcion="Reserva creada"),
+    EstadoReserva(nombre="Pendiente de confirmacion", descripcion="Reserva pendiente de confirmacion"),
+    EstadoReserva(nombre="Anulada", descripcion="Reserva anulada por caducidad"),
+    EstadoReserva(nombre="Senia Pagada", descripcion="Seña pagada"),
+    EstadoReserva(nombre="Cancelada", descripcion="Reserva cancelada")
+])
+
+ESTADOS_FESTEJO.extend([
+    EstadoFestejo(nombre="Pendiente", descripcion="Festejo pendiente"),
+    EstadoFestejo(nombre="Realizado", descripcion="Festejo realizado"),
+    EstadoFestejo(nombre="Cancelado", descripcion="Festejo cancelado")
+])
+
+
+tipoDocumento = TipoDocumento(nombre="DNI", descripcion="Documento Nacional de Identidad")
+
+hijo1 = Chico(nombre="Mateo", apellido="Gomez", edad=8, tipoDocumento=tipoDocumento, numeroDocumento="45678901")
+hijo2 = Chico(nombre="Sofia", apellido="Perez", edad=10, tipoDocumento=tipoDocumento, numeroDocumento="46789012")
+
+
+cliente1 = Cliente(
+    nombre="Juan",
+    apellido="Gomez",
+    tipoDocumento=tipoDocumento,
+    numeroDocumento="30123456",
+    domicilio="Av. Colon 123",
+    telefono="3514567890",
+    celular="3515678901",
+    email="juan@gmail.com",
+    hijos=[hijo1]
+)
+
+cliente2 = Cliente(
+    nombre="Maria",
+    apellido="Perez",
+    tipoDocumento=tipoDocumento,
+    numeroDocumento="31234567",
+    domicilio="Bv. San Juan 456",
+    telefono="3516789012",
+    celular="3517890123",
+    email="maria@gmail.com",
+    hijos=[hijo2]
+)
+
+
+paqueteA = PaqueteReserva(nombre="Paquete A", descripcion="Uso de los juegos acorde a la edad, una coordinadora.", costoPaquete=80000)
+paqueteB = PaqueteReserva(nombre="Paquete b", descripcion="Incluye la opción A más 10 litros de bebida y los descartables para niños.", costoPaquete=100000)
+paqueteC = PaqueteReserva(nombre="Paquete b", descripcion="Incluye la opción B, más la comida para todos los invitados y los descartables para adultos.", costoPaquete=120000)
+
+carpa1 = Carpa(numero=1, ubicacion="Sector norte")
+carpa2 = Carpa(numero=2, ubicacion="Sector sur")
+
+ahora = datetime.now()
+
+
+reserva1 = Reserva(
+    fechaHoraFestejo=ahora + timedelta(days=10),
+    cliente=cliente1,
+    cumpleaniero=hijo1,
+    paqueteSeleccionado=paqueteA,
+    carpaSeleccionada=carpa1
+)
+
+reserva1.crearReserva()
+reserva1.cancelarReserva()
+
+
+reserva2 = Reserva(
+    fechaHoraFestejo=ahora + timedelta(days=15),
+    observacion="El cumpleañero es alérgico al maní. Evitar alimentos que contengan maní.",
+    cliente=cliente2,
+    cumpleaniero=hijo2,
+    paqueteSeleccionado=paqueteC,
+    carpaSeleccionada=carpa2
+)
+
+reserva2.crearReserva()
+reserva2.setPendienteConfirmacion()
+reserva2.setSeniaPagada()
+
+
+print("========== CLIENTE 1 ==========")
+cliente1.mostrarCliente()
+
+print("\n========== CLIENTE 2 ==========")
+cliente2.mostrarCliente()
+
+print("\n========== RESERVA 1 ==========")
+reserva1.mostrarReserva()
+
+print("\n========== RESERVA 2 ==========")
+reserva2.mostrarReserva()
+
+coordinadora = Coordinadora(nombre="Laura", apellido="Fernandez")
+
+festejo2 = Festejo(
+    fechaHoraInicio=reserva2.fechaHoraFestejo,
+    fechaHoraFin=reserva2.fechaHoraFestejo + timedelta(hours=2, minutes=45),
+    coordinadora=coordinadora,
+    estadoFestejo=ESTADOS_FESTEJO[0]
+)
+
+factura2 = Factura(
+    numero="0001",
+    fechaHoraEmision=ahora,
+    importeServicio=reserva2.calcularCostoBase(),
+    importeExtras=0,
+    saldoPendiente=reserva2.calcularCostoBase() - reserva2.calcularSenia()
+)
+
+print("\n---------------- FESTEJOS ----------------\n")
+festejo2.mostrarFestejo()
+
+print("\n---------------- FACTURAS ----------------\n")
+factura2.mostrarFactura()

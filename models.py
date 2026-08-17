@@ -16,6 +16,10 @@ class Chico(BaseModel):
     tipoDocumento: TipoDocumento = Field(..., description="Tipo de documento")
     numeroDocumento: str = Field(..., min_length=7, max_length=8, pattern=r"^\d+$", description="Numero de documento")
 
+    def mostrarChico(self):
+        print("Nombre:", self.nombre, self.apellido)
+        print("Edad:", self.edad)
+
 class Cliente(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=30, description="Nombre del cliente")
     apellido: str = Field(..., min_length=3, max_length=30, description="Apellido del cliente")
@@ -27,13 +31,28 @@ class Cliente(BaseModel):
     email: str = Field(..., description="Email del cliente")
     hijos: list[Chico] = Field(default_factory=list, description="Hijos del cliente")
 
+    def mostrarCliente(self):
+        print("Nombre:", self.nombre, self.apellido)
+        print("Hijos:")
+        if self.hijos:
+            for hijo in self.hijos:
+                hijo.mostrarChico()
+        else:
+            print("No tiene hijos")
+
 class Coordinadora(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=30, description="Nombre de coordinadora")
     apellido: str = Field(..., min_length=3, max_length=30, description="Apellido de coordinadora")
 
+    def mostrarCoordinadora(self):
+        print(f"Coordinadora: {self.nombre} {self.apellido}")
+
 class EstadoFestejo(BaseModel):
     nombre: str = Field(..., description="Nombre del estado de festejo")
     descripcion: Optional[str] = Field(default=None,description="Descripcion del estado del festejo")
+
+    def mostrarEstadoFestejo(self):
+        print(f"Estado festejo: {self.nombre}")
 
 class Asistencia(BaseModel):
     numeroAsistencia: int = Field(..., gt=0, description="Numero de asistencia")
@@ -69,6 +88,13 @@ class Festejo(BaseModel):
             return extras * 5000
         return 0
 
+    def mostrarFestejo(self):
+        print("############### FESTEJO ################")
+        print(f"Fecha: {self.fechaHoraInicio} - {self.fechaHoraFin}")
+        self.coordinadora.mostrarCoordinadora()
+        self.estadoFestejo.mostrarEstadoFestejo()
+        
+
 class PaqueteReserva(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=50, description="Nombre del paquete de reserva")
     descripcion: Optional[str] = Field(default=None,description="Descripcion del paquete de reserva")
@@ -77,9 +103,15 @@ class PaqueteReserva(BaseModel):
     def getCostoPaquete(self):
         return self.costoPaquete
 
+    def mostrarPaquete(self):
+        print(f"Paquete: {self.nombre} - Costo: {self.costoPaquete}")
+
 class Carpa(BaseModel):
     numero: int = Field(..., gt=0, description="Numero de carpa")
     ubicacion: str = Field(..., description="Ubicacion de carpa")
+
+    def mostrarCarpa(self):
+        print(f"Carpa: {self.numero} - Ubicacion: {self.ubicacion}")
 
 
 class Factura(BaseModel):
@@ -91,6 +123,15 @@ class Factura(BaseModel):
 
     def calcularImporteTotal(self):
         return self.importeServicio + self.importeExtras
+
+    def mostrarFactura(self):
+        print("################ FACTURA ###################")
+        print("Numero:", self.numero)
+        print("Fecha de emision:", self.fechaHoraEmision)
+        print("Importe del servicio:", self.importeServicio)
+        print("Importe de extras:", self.importeExtras)
+        print("Importe total:", self.calcularImporteTotal())
+        print("Saldo pendiente:", self.saldoPendiente)
 
 class EstadoReserva(BaseModel):
     nombre: str = Field(..., description="Nombre de estado reserva")
@@ -110,6 +151,9 @@ class EstadoReserva(BaseModel):
 
     def esCancelada(self):
         return self.nombre == "Cancelada"
+
+    def mostrarEstadoReserva(self):
+        print(f"Estado de Reserva: {self.nombre}")
 
 class CambioEstadoReserva(BaseModel):
     fechaHoraInicio: datetime = Field(default_factory=datetime.now, description="Fecha y hora de inicio del cambio de estado")
@@ -185,6 +229,9 @@ class CambioEstadoReserva(BaseModel):
         else:
             self.estadoReserva = cancelada
 
+    def mostrarEstadoReserva(self):
+        self.estadoReserva.mostrarEstadoReserva()
+
 class Reserva(BaseModel):
     fechaHoraFestejo: datetime = Field(..., description="Fecha y hora seleccionada para el festejo")
     observacion: Optional[str] = Field(default=None,description="Observacion adicional para el festejo")
@@ -259,3 +306,16 @@ class Reserva(BaseModel):
 
     def calcularRetencion(self):
         pass
+
+    def mostrarReserva(self):
+        print("################ RESERVA ###################")
+        print("Cumpleaniero:")
+        self.cumpleaniero.mostrarChico()
+        self.paqueteSeleccionado.mostrarPaquete()
+        self.carpaSeleccionada.mostrarCarpa()
+        print("Observacion:", self.observacion)
+
+        if self.listaCambiosEstado:
+            self.listaCambiosEstado[-1].mostrarEstadoReserva()
+        else:
+            print("Estado actual: Sin estado")
