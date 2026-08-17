@@ -11,8 +11,8 @@ classDiagram
     Festejo -->"1" Coordinadora
     Festejo -->"0..*" Asistencia
     Festejo -->"1" EstadoFestejo
-    Reserva -->"1" PaqueteReserva
     Reserva -->"1" Carpa
+    Reserva -->"1" PaqueteReserva
     Reserva -->"0..1" Factura
     Asistencia -->"1" Chico
 
@@ -24,16 +24,19 @@ classDiagram
         - Coordinadora coordinadora
         - EstadoFestejo estadoFestejo
         - calcularCostoAdicional()
+        + mostrarFestejo()
     }
 
     class Coordinadora {
         - str nombre
         - str apellido
+        + mostrarCoordinadora()
     }
 
     class EstadoFestejo {
         - str nombre
         - str descripcion
+        + mostrarEstadoFestejo()
     }
 
     class Chico {
@@ -42,17 +45,18 @@ classDiagram
         - int edad
         - TipoDocumento tipoDocumento
         - int numeroDocumento
+        + mostrarChico()
     }
 
     class Reserva {
         - dateTime fechaHoraFestejo
         - str Observacion
-        - float seña
         - Cliente cliente
         - Chico cumpleaniero
         - CambioEstadoReserva[list] listaCambiosEstado
         - PaqueteReserva paqueteSeleccionado
         - Carpa carpaSeleccionada
+        - Festejo festejo
         - Factura factura
 
         - calcularCostoBase()
@@ -65,30 +69,46 @@ classDiagram
         - generarContrato()
         - cancelarReserva()
         - calcularRetencion()
+        + mostrarReserva()
     }
 
     class CambioEstadoReserva {
         - dateTime fechaHoraInicio
         - dateTime fechaHoraFin
         - EstadoReserva estadoReserva
+        + conocerEstadosReserva()
+        + setFechaHoraFin()
+        + setCreada()
+        + setPendienteConfirmacion()
         + pasaron5Dias()
-        - setFechaHoraFin()
-        - getEstado()
+        + setAnulada()
+        + setSeniaPagada()
+        + setCancelada()
+        + mostrarEstadoReserva()
     }
 
     class EstadoReserva {
         - str nombre
         - str descripcion
+        + esCreada()
+        + esPendienteConfirmacion()
+        + esAnulada()
+        + esSeniaPagada()
+        + esCancelada()
+        + mostrarEstadoReserva()
     }
     class Carpa {
         - int numero
         - str ubicacion
+        + mostrarCarpa()
     }
 
     class PaqueteReserva {
         - str nombre
         - str descripcion
         - float costoPaquete
+        + getCostoPaquete()
+        + mostrarPaquete()
     }
 
     class Cliente {
@@ -101,6 +121,7 @@ classDiagram
         - str celular
         - email email
         - Chico[list] Hijos
+        + mostrarCliente()
     }
 
     class Asistencia {
@@ -114,11 +135,11 @@ classDiagram
     }
 
     class Factura {
-        -String numero
-        -Date fechaEmision
-        -float importeServicio
-        -float importeExtras
-        -float saldoPendiente
-        -float importeTotal
-        -calcularImporteTotal()
+        - String numero
+        - dateTime fechaHoraEmision
+        - float importeServicio
+        - float importeExtras
+        - float saldoPendiente
+        - calcularImporteTotal()
+        + mostrarFactura()
     }
