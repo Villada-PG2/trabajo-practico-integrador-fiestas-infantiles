@@ -1,6 +1,10 @@
 from pydantic import BaseModel, Field, model_validator, field_validator
 from datetime import datetime, timedelta
 from typing import Optional
+
+ESTADOS_RESERVA = []
+ESTADOS_FESTEJO = []
+
 class TipoDocumento(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=30, description="Nombre de documento")
     descripcion: Optional[str] = Field(default=None,description="Descripcion del documento")
@@ -101,7 +105,7 @@ class EstadoReserva(BaseModel):
 class CambioEstadoReserva(BaseModel):
     fechaHoraInicio: datetime = Field(default_factory=datetime.now, description="Fecha y hora de inicio del cambio de estado")
     fechaHoraFin: Optional[datetime] = Field(default=None, description="Fecha y hora de fin del cambio de estado")
-    estadoReserva: EstadoReserva = Field(..., description="Estado asociadoa al cambio de estado reserva")
+    estadoReserva: Optional[EstadoReserva] = Field(default=None, description="Estado asociadoa al cambio de estado reserva")
 
     def pasaron5Dias(self):
         tiempo_desde_cambio = datetime.now() - self.fechaHoraInicio
@@ -112,6 +116,27 @@ class CambioEstadoReserva(BaseModel):
 
     def getNombreEstado(self):
         return self.estadoReserva.getNombre()
+
+    def setCreada(self):
+        pass
+
+    def setPendienteConfirmacion(self):
+        pass
+
+    def pasaron5Dias(self):
+        pass
+
+    def setAnulada(self):
+        pass
+
+    def setSeniaPagada(self):
+        pass
+
+    def setAnulada(self):
+        pass
+
+    def serCancelada(self):
+        pass
 
 class Reserva(BaseModel):
     fechaHoraFestejo: datetime = Field(..., description="Fecha y hora seleccionada para el festejo")
@@ -141,14 +166,16 @@ class Reserva(BaseModel):
         return self.calcularCostoBase() * 0.30
 
     def crearReserva(self):
-        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="Creada"))
+        cambioEstado = CambioEstadoReserva()
         self.listaCambiosEstado.append(cambioEstado)
+        cambioEstado.setCreada()
 
     def setPendienteConfirmacion(self):
-        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="PendienteDeConfirmacion"))
+        cambioEstado = CambioEstadoReserva()
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
+        cambioEstado.setPendienteConfirmacion()
 
     def pasaron5Dias(self):
         if not self.listaCambiosEstado:
@@ -160,25 +187,28 @@ class Reserva(BaseModel):
             self.setAnulada()
 
     def setAnulada(self):
-        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="Anulada"))
+        cambioEstado = CambioEstadoReserva()
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
+        cambioEstado.setAnulada()
 
     def setSeniaPagada(self):
-        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="SeniaPagada"))
+        cambioEstado = CambioEstadoReserva()
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
+        cambioEstado.setSeniaPagada()
 
     def generarContrato(self):
         pass
 
     def cancelarReserva(self):
-        cambioEstado = CambioEstadoReserva(estadoReserva=EstadoReserva(nombre="Cancelada"))
+        cambioEstado = CambioEstadoReserva()
         if len(self.listaCambiosEstado) > 0: 
             self.listaCambiosEstado[-1].setFechaHoraFin()
         self.listaCambiosEstado.append(cambioEstado)
+        cambioEstado.setCancelada()
 
     def calcularRetencion(self):
         pass
